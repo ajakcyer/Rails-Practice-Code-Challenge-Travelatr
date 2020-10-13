@@ -1,0 +1,13 @@
+<% titles = @destination.posts.map {|post| post.title}.sort %>
+
+<% titles.each do |title| %>
+    <p><%= title %></p>
+<% end %><br><br>
+
+featured post with most likes*****<br>
+
+all the bloggers on each post in destination<br><br>
+
+<% sum_of_age = @destination.posts.map {|post| post.blogger.age}.sum %>
+<% sum_of_posts = @destination.posts.count %>
+<p><b>Average Age:</b> <%= sum_of_age / sum_of_posts %></p>
