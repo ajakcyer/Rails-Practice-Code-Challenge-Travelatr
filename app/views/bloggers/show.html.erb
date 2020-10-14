@@ -1,10 +1,51 @@
 <h1><%= @blogger.name %></h1>
-<p>Bio:<%= @blogger.bio %></p>
-<p>Age:<%= @blogger.age %></p>
+<p><b>Bio: </b><%= @blogger.bio %></p>
+<p><b>Age: </b><%= @blogger.age %></p>
 
 
-<p>Total Likes:
-    <%= @blogger.posts.map {|post| post.likes}.sum%>
+<p><b>Total Likes:</b>
+    <%= @blogger.posts.map{|post| post.likes}.sum %>
 </p>
 
-link to post with most likes*******
+<% post_likes = {} %>
+<% @blogger.posts.map {|post| post_likes[post] = post.likes }%>
+<% most_liked = post_likes.max_by {|post, likes| likes}%>
+
+<% if most_liked %>
+    <% if most_liked[1] > 0 %>
+        <p><b>Featured Post: </b>
+            <%= link_to most_liked[0].title, post_path(most_liked[0]) %>
+            - liked <%= most_liked[1] %> times!
+        </p>
+    <% end %>
+<% end %>
+<hr>
+
+<h3><b>My Posts</b></h3>
+<% if @blogger.posts.present? %>
+    <ul>
+        <% @blogger.posts.each do |post| %>
+            <li><%= link_to post.title, post_path(post) %></li>
+        <% end %>
+    </ul>
+    <p><%= link_to 'Click here', new_post_path %> to add a post!</p>
+<% else %>
+    <p><%= link_to 'Click here', new_post_path %> to add a post!</p>
+<% end %>
+
+
+
+<% my_dest = {} %>
+<% @blogger.destinations.uniq.each {|destination| my_dest[destination] = [] } %>
+<% @blogger.posts.each {|post| my_dest[post.destination] << post}%>
+<% order_dest = my_dest.sort_by {|dest, pst| pst.count}.reverse %>
+
+<% if @blogger.posts.present? %>
+<hr>
+    <h3><b>Most Written About Destinations:</b></h3>
+    <% order_dest.take(5).each do |dest, pst| %>
+        <p><%= link_to dest.name, destination_path(dest) %></p>
+    <% end %> 
+<% end %>
+
+

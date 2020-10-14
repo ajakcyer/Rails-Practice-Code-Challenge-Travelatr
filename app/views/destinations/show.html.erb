@@ -1,13 +1,47 @@
-<% titles = @destination.posts.map {|post| post.title}.sort %>
+<h1><%= @destination.name %></h1>
+<p><b>Country: </b><%= @destination.country %></p>
+<hr>
 
-<% titles.each do |title| %>
-    <p><%= title %></p>
-<% end %><br><br>
 
-featured post with most likes*****<br>
+<% my_posts = {} %>
+<% @destination.posts.map {|post| my_posts[post] = post.created_at.strftime('%F %T') } %>
+<% my_posts %>
+<% recent_posts = my_posts.sort_by {|post, time| time }.reverse %>
 
-all the bloggers on each post in destination<br><br>
 
-<% sum_of_age = @destination.posts.map {|post| post.blogger.age}.sum %>
+<% if @destination.posts.present? %>
+    <h3>Most Recent Posts:</h3>
+    <% recent_posts.take(5).each do |post_time| %>
+        <p><%= link_to post_time[0].title, post_path(post_time[0]) %></p>
+    <% end %>
+    <hr>
+    <p><%= link_to 'Click here', new_post_path %> to write a post about <%= @destination.name%>!</p>
+<% else %>
+    <p><%= link_to 'Click here', new_post_path %> to write a post about <%= @destination.name%>!</p>
+<% end %>
+
+
+
+<% post_likes = {} %>
+<% @destination.posts.map {|post| post_likes[post] = post.likes }%>
+<% most_liked = post_likes.max_by {|post, likes| likes}%>
+
+<% if most_liked %>
+    <% if most_liked[1] > 0 %>
+        <p><b>Featured Post: </b>
+            <%= link_to most_liked[0].title, post_path(most_liked[0]) %>
+            - liked <%= most_liked[1] %> times!
+        </p>
+    <% end %>
+<% end %>
+
+
+
+<% sum_of_ages = @destination.bloggers.uniq.map {|blogger| blogger.age}.sum %>
 <% sum_of_posts = @destination.posts.count %>
-<p><b>Average Age:</b> <%= sum_of_age / sum_of_posts %></p>
+<p>
+    <% if sum_of_posts != 0 %>
+        <b>Average Blogger Age:</b>
+        <%= sum_of_ages / sum_of_posts %>
+    <% end %>
+</p>

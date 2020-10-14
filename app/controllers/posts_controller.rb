@@ -1,22 +1,32 @@
 class PostsController < ApplicationController
 
-    def new
-        @post = Posts.new
+    def like
+        post = Post.find(params[:id])
+        post.like_post
+        post.save
+        post.reload
+        redirect_to post_path(post)
+    end
+
+    def index
+        @posts = Post.all
     end
 
     def show
         @post = Post.find(params[:id])
     end
-    
+
+    def new
+        @post = Post.new
+    end
 
     def create
-        @post = Post.new(post_params)
-        if @object.save
-          flash[:success] = "Object successfully created"
-          redirect_to @object
+        post = Post.create(post_params)
+        if post.valid?
+            redirect_to post_path(post)
         else
-          flash[:error] = "Something went wrong"
-          render 'new'
+            flash[:my_errors] = post.errors.full_messages
+            redirect_to new_post_path
         end
     end
 
@@ -25,20 +35,20 @@ class PostsController < ApplicationController
     end
 
     def update
-        @post = Post.find(params[:id])
-        if @post.update(post_params)
-          flash[:success] = "Object was successfully updated"
-          redirect_to post_path(@post)
+            post = Post.find(params[:id])
+        if post.update(post_params)
+            redirect_to post_path(post)
         else
-          flash[:error] = "Something went wrong"
-          redirect_to edit_post_path(@post)
+            flash[:my_errors] = post.errors.full_messages
+            redirect_to edit_post_path(post)
         end
     end
 
     private
 
     def post_params
-        params.require(:post).permit(:title, :content, :likes)
+        params.require(:post).permit(:title, :content, :blogger_id, :destination_id)
     end
+
        
 end

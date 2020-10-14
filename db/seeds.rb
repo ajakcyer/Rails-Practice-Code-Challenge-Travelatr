@@ -7,9 +7,9 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
-30.times do 
+33.times do 
   Destination.create({
-    name: Faker::GameOfThrones.city,
+    name: Faker::TvShows::GameOfThrones.unique.city,
     country: Faker::Address.country
   })
 end

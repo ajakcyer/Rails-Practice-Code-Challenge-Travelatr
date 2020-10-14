@@ -1,3 +1,24 @@
 <h1><%= @post.title %></h1>
-<%= @post.content %>
-<b><%=link_to @post.blogger.name, blogger_path(@post.blogger) %></b>
+<p><b>Destination: </b><%= link_to @post.destination.name, destination_path(@post.destination) %></p>
+<p><b>Written By: </b><%=link_to @post.blogger.name, blogger_path(@post.blogger) %></p>
+<hr>
+
+
+<% if @post.content.end_with?("]") %>
+    <% post_content = @post.content.split(/[\["[\\\]",]]/) %>
+    <% post_content.delete("") %>
+    <% post_content.delete(" ") %>
+    <% post_content.each do |content| %>
+        <p><%= content %></p>
+    <% end %><br><br>
+<% else %>
+    <p><%= simple_format(@post.content) %></p>
+<% end %>
+
+
+<p><b>Likes: </b><%= @post.likes %></p>
+
+<%= form_for @post, as: :post, url: like_path(@post), method: :post do |f| %>
+    <%= f.button :'Like Post' %>
+<% end %>
+
